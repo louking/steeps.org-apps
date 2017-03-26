@@ -1,0 +1,15 @@
+<p>Thanks so much for signing on as a <?= formdata.level.text ?>-level sponsor of the <?= formdata.race.text ?></p>
+    
+<ul>
+  <? for (var i=0; i<formdata._keyorder.length; i++) { ?>
+    <? var field = formdata._keyorder[i]; ?>
+    <li><?= formdata[field].label ?>: <?= formdata[field].text ?>
+  <? } ?>
+</ul>
+
+<p>
+<?= formdata._racedirector ?>, Race Director, <?= formdata.race.text ?><br/>
+Frederick Steeplechasers Running Club <br/>
+<a href="http://steeplechasers.org">http://steeplechasers.org</a>
+</p>    
+
