@@ -1,6 +1,8 @@
 # steeps.org-apps
 google apps scripts stored on steeplechasers.org
 
+Each directory represents a single google apps script.
+
 To reuse the scripts under the directories, you need to create a google apps script, 
 and then create file within the script for each file in the directory.
 
