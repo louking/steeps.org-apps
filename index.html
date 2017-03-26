@@ -20,23 +20,35 @@
         <div class="row">
           <div class="col s12">
             <h5 class="center-align steeps-blue-text">Frederick Steeplechasers Signature Race Sponsorship Registration</h5>
-            <p class="small-text">Net proceeds of the Steeplechaser Signature Races benefit the Frederick community.
+            <p>Net proceeds of the Steeplechaser Signature Races benefit the Frederick community.
             We are grateful for the generosity of our sponsors, who help us to bring quality races to the Frederick 
             area while supporting the local community through our donations.</p>
-            <p class="small-text">For more information on the sponsor opportunities of each of our races, use the links 
+            <p>For more information on the sponsor opportunities of each of our races, use the links 
             below to visit our race websites.</p>
-            <ul class="browser-default small-text">
+            <ul class="browser-default">
               <? for (var race in levels) { ?>
                 <li>
                   <a href='<?= races[race].sponsorshipUrl ?>' target=_blank><?= race ?></a>
                 </li>
               <? } ?>
             </ul>
-            <p class="small-text">To sign on as a sponsor of one of our races, please use this form to submit your sponsorship information.</p>
+            <p>To sign on as a sponsor of one of our races, please use this form to submit your sponsorship information.</p>
             
           </div>
         </div>
       
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="race" name="racename" class="validate" required  onchange='showRace()'>
+              <option value="" required disabled selected>Choose race to sponsor</option>
+                <? for (var race in levels) { ?>
+                  <option value="<?= races[race].tag ?>"><?= race ?></option>
+                <? } ?>
+            </select>
+            <label>Race *</label>
+          </div>
+        </div>
+        
         <div class="row">
           <div class="input-field col s12">
             <label for="organization">Sponsor Organization *</label>
@@ -84,18 +96,6 @@
           </div>
         </div>
              
-        <div class="row">
-          <div class="input-field col s12">
-            <select id="race" name="racename" class="validate" required  onchange='showRace()'>
-              <option value="" required disabled selected>Choose race to sponsor</option>
-                <? for (var race in levels) { ?>
-                  <option value="<?= races[race].tag ?>"><?= race ?></option>
-                <? } ?>
-            </select>
-            <label>Race *</label>
-          </div>
-        </div>
-        
         <? for (var race in levels) { ?>
           <? var tag=races[race].tag ?>
             <div id="<?= tag ?>-race" class="input all-races" style="display:none">
