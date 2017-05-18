@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_blank">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FSRC Memorial Scholarship Application</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+    <style>
+      .disclaimer{width: 480px; color:#646464;margin:20px auto;padding:0 16px;text-align:center;font:400 12px Roboto,Helvetica,Arial,sans-serif}.disclaimer a{color:#009688}#credit{display:none}
+    </style>
+  </head>
+  <body>
+
+    <!-- adapted from code written by Amit Agarwal amit@labnol.org --> 
+
+    <form class="main" id="form" novalidate="novalidate" style="max-width: 480px;margin: 40px auto;">
+      <div id="forminner">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center-align teal-text">FSRC Memorial Scholarship Application</h5>
+            <p class="disclaimer">Please follow the application instructions found at <a href=http://steeplechasers.org/about/fsrc-memorial-scholarship/fsrc-memorial-scholarship-application-process/>FSRC Memorial Scholarship Application Process</a></p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="name" type="text" name="Name" class="validate" required="" aria-required="true">
+            <label for="name">Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="email" type="email" name="Email" class="validate" required="" aria-required="true">
+            <label for="email">Email Address</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="file-field input-field col s12">
+            <div class="btn">
+              <span>Files</span>
+              <input id="files" type="file" multiple />
+            </div>
+            <div class="file-path-wrapper">
+              <input class="file-path validate" type="text" placeholder="Select one or more files on your computer">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="input-field col s6">
+            <button class="waves-effect waves-light btn submit-btn" type="submit" onclick="submitForm(); return false;">Submit</button>
+          </div>   
+        </div>
+        <div class="row">
+         <p class="disclaimer">
+         If you have any problems submitting this form, or questions on how to use this form, 
+         please send an email describing what you did and what went wrong, or with your question, to 
+         <a href="mailto:memorialscholarship@steeplechasers.org?subject=[FSRC Memorial Scholarship - Help] problem or question on application form">memorialscholarship@steeplechasers.org</a>
+         </p>
+        </div>
+        <div class="row">
+          <div class="input-field col s12" id = "progress">
+          </div>
+        </div>
+      </div>
+      <div id="success" style="display:none">
+        <h5 class="left-align teal-text">Files Uploaded</h5>
+        <p>Your application has been successfully submitted</p>
+        <p>Thank you for participating in the FSRC Memorial Scholarship application process</p>
+        <p>You will be hearing from us soon</p>
+        <p>If you have any questions, please send email to <a href="mailto:memorialscholarship@steeplechasers.org">memorialscholarship@steeplechasers.org</a>
+      </div>
+    </form>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <!--
+    <script src="https://gumroad.com/js/gumroad.js"></script>
+    -->
+    
+
+    <script>
+
+      var file, files;
+      var fileCounter = 0;
+      var reader = new FileReader();
+
+      /* see http://stackoverflow.com/questions/28147486/handling-multiple-files-from-an-input-element-in-an-array-with-google-apps-scrip */
+      /* for pattern on uploading multiple files */
+      reader.onloadend = function(e) {
+        if (reader.error != null) {
+          showError("File " + file.name + " could not be read.");
+          return;
+        } else {
+          /* deep copy to avoid race condition on reader with processNext */
+          thisreader = jQuery.extend(true, {}, reader)
+          google.script.run
+            .withSuccessHandler(processNext)  /* process each file as the previous one completes */
+            .uploadFileToGoogleDrive(thisreader.result, files[fileCounter].name, $('input#name').val(), $('input#email').val());
+        }
+      }
+
+      function showSuccess(e) {
+        if (e === "OK") { 
+          $('#forminner').hide();
+          $('#success').show();
+        } else {
+          showError(e);
+        }
+      }
+
+      function sendEmail() {
+        google.script.run
+          .withSuccessHandler(showSuccess)
+          .sendEmail($('input#name').val(), $('input#email').val());
+      }
+      
+      function processNext(e) {
+        if (e == "OK") {
+          fileCounter++;
+          if (fileCounter < files.length) {
+            /* next file, when complete processNext called */
+            showMessage("Uploading " + files[fileCounter].name + "..");
+            reader.readAsDataURL(files[fileCounter]);  
+          } else {
+            fileCounter = 0;
+            /* we're done, send email about application */
+            sendEmail();
+          }
+        } else {
+          showError(e);
+        }
+      }
+      
+      function submitForm() {
+
+        files = $('#files')[0].files;
+
+        if (files.length === 0) {
+          showError("Please select a file to upload");
+          return;
+        }
+
+        var totalsize = 0;
+        
+        for (i=0; i<files.length; i++) {
+          file = files[i];
+        
+          if (file.size > 9 * 1024 * 1024) {
+            showError("Each file must be less than 9 MB. " + file.name + " exceeds limit");
+            return;
+          }
+          
+          totalsize += file.size;
+          if (totalsize > 24 * 1024 * 1024) {
+            showError("All files together must be less than 24 MB");
+            return;
+          }
+        }
+
+        showMessage("Uploading " + files[fileCounter].name + "..");
+
+        reader.readAsDataURL(files[fileCounter]);
+
+      }
+
+      function showError(e) {
+        $('#progress').addClass('red-text').html(e);
+      }
+
+      function showMessage(e) {
+        $('#progress').removeClass('red-text').html(e);
+      }
+
+
+    </script>
+
+  </body>
+
+</html>
