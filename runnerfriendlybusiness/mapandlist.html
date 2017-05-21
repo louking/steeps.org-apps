@@ -36,7 +36,7 @@
       <tbody>
       <? for (var i = 0; i < features.length; i++) { ?>
         <? properties = features[i].geometry.properties ?>
-          <? if (properties.icon.toLowerCase() != 'business') continue; ?>
+          <? if (!properties.iconattrs.inList) continue; ?>
           <tr>
             <td><?= properties.name ?></td>
             <td><?= properties.icon ?></td>
@@ -67,37 +67,28 @@
     for (var i = 0; i < features.length; i++) {
       var coordinates = features[i].geometry.coordinates;
       var properties = features[i].geometry.properties;
-      var icon = properties.icon.toLowerCase();
       
-      // business gets more stuff in the title
-      if (icon == 'business') {
+      // title is popup text, check iconattrs to see how to format
+      if (properties.iconattrs.showAddr) {
         var title = properties.name + '\n' + properties.type + '\n' + properties.street + ', ' + properties.city;
       
-      // nonbusiness just record what it is
+      // if not showAddr just record what it is
       } else {
         var title = properties.icon;
       }
         
       var position = { lat: parseFloat( coordinates[0] ), lng: parseFloat( coordinates[1] ) };
       bounds.extend(position)
+      var image = {
+        url: properties.iconattrs.url,
+        anchor: new google.maps.Point(properties.iconattrs.width/2, properties.iconattrs.height/2),
+      };
       var markeropts = {
         position: position,
         title: title,
-        map: map
+        map: map,
+        icon: image,
       };
-      if (icon == 'water') {
-        var image = {
-          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_local_drink_blue.png',
-          anchor: new google.maps.Point(15, 17),
-        };
-        markeropts.icon = image;
-      } else if (icon == 'rest room') {
-        var image = {
-          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_wc_green.png',
-          anchor: new google.maps.Point(15, 17),
-        };
-        markeropts.icon = image;
-      }
       var marker = new google.maps.Marker(markeropts);
     } 
     map.fitBounds(bounds);

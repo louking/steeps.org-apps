@@ -72,21 +72,39 @@ function getGeoJson() {
   var fileid = '1pmUuqbIq01q0qDRqUScVYFEy7iebtvvo931vfneBbLo';
   var geo = 
       { type : 'FeatureCollection',
-       features : []
+       features : [],
       };
   
-  // retrieve the data in the spreadsheet and add to features list
+  // retrieve the data in the spreadsheet and add to features list and icons object
   var ss = SpreadsheetApp.openById(fileid);
   var db = ss.getSheetByName('database');
-  var range = db.getRange(2, 1, db.getMaxRows() - 1, db.getMaxColumns());
+  var dbrange = db.getRange(2, 1, db.getMaxRows() - 1, db.getMaxColumns());
+  var objects = getRowsData(db, dbrange);
+
+  var icondb = ss.getSheetByName('icons');
+  var iconrange = icondb.getRange(2, 1, icondb.getMaxRows() - 1, icondb.getMaxColumns());
+  var iconrows = getRowsData(icondb, iconrange);
+  var icons = {};
+
+  // add icon descriptors
+  for (var i=0; i < iconrows.length; ++i) {
+    // get a row object
+    var iconattrs = iconrows[i];
+    icons[iconattrs.icon] = iconattrs;
+  }
   
   // add points from database
-  objects = getRowsData(db, range);
   for (var i = 0; i < objects.length; ++i) {
     // Get a row object
     var point = objects[i];
-    var icon = point.icon.toLowerCase();
-    if (icon == 'business' && !point.rrca) continue;
+    var iconattrs = icons[point.icon];
+
+    // if in list, may need to check a point attr to decide to include
+    if (iconattrs.inList) {
+      if (iconattrs.checkAttr) {
+        if (!point[iconattrs.checkAttr]) continue;
+      }
+    };
     
     // for street locations parseFloat(city) == NaN
     var streetloc, geocode, location;
@@ -101,7 +119,6 @@ function getGeoJson() {
       location = { lat: point.street1, lng: point.city };
     }
       
-    
     var thisgeo = {
       type : 'Feature',
       geometry : {
@@ -110,12 +127,13 @@ function getGeoJson() {
         properties: {
           name : point.businessName,
           icon : point.icon,
+          iconattrs : iconattrs,
           comment : point.comment,
           type : point.businessType,
           phone : point.businessPhone,
           street : point.street1,
           city : point.city,
-          state : point.state
+          state : point.state,
         }
       }
     }

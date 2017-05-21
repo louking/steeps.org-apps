@@ -34,7 +34,7 @@
       <tbody>
       <? for (var i = 0; i < features.length; i++) { ?>
         <? properties = features[i].geometry.properties ?>
-          <? if (properties.icon.toLowerCase() != 'business') continue; ?>
+          <? if (!properties.iconattrs.inList) continue; ?>
           <tr>
             <td><?= properties.name ?></td>
             <td><?= properties.icon ?></td>
