@@ -107,7 +107,8 @@ src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUjwDo7PJ6wLTWRxUUbUBeBRC
 <script>
 $(document).ready(function(){
   $('#rfb-table').DataTable({
-    pageLength: 500,
+    "pageLength": -1,
+    "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
   });
 });
 </script>
