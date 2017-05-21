@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      #rfb-map {
+        height: 400px;
+        width: 100%;
+       }
+    </style>
+  </head>
+  <body>
+    <div id="rfb-map"></div>
+    <script>
+  function initMap() {
+    var frederick = {lat: 39.4406192, lng: -77.4892428};
+    var features = JSON.parse(<?= jsonfeatures ?>);
+    var map = new google.maps.Map(document.getElementById('rfb-map'), {
+      zoom: 10,
+      center: frederick
+    });
+      
+    // add all the markers, keeping track of the bounds
+    // see http://stackoverflow.com/questions/1556921/google-map-api-v3-set-bounds-and-center
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < features.length; i++) {
+      var coordinates = features[i].geometry.coordinates;
+      var properties = features[i].geometry.properties;
+      var icon = properties.icon.toLowerCase();
+      
+      // business gets more stuff in the title
+      if (icon == 'business') {
+        var title = properties.name + '\n' + properties.type + '\n' + properties.street + ', ' + properties.city;
+      
+      // nonbusiness just record what it is
+      } else {
+        var title = properties.icon;
+      }
+        
+      var position = { lat: parseFloat( coordinates[0] ), lng: parseFloat( coordinates[1] ) };
+      bounds.extend(position)
+      var markeropts = {
+        position: position,
+        title: title,
+        map: map
+      };
+      if (icon == 'water') {
+        var image = {
+          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_local_drink_blue.png',
+          anchor: new google.maps.Point(15, 17),
+        };
+        markeropts.icon = image;
+      } else if (icon == 'rest room') {
+        var image = {
+          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_wc_green.png',
+          anchor: new google.maps.Point(15, 17),
+        };
+        markeropts.icon = image;
+      }
+      var marker = new google.maps.Marker(markeropts);
+    } 
+    map.fitBounds(bounds);
+  }
+  </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUjwDo7PJ6wLTWRxUUbUBeBRCu39hmlbM&callback=initMap">
+    </script>    
+  </body>
+</html>
+
+

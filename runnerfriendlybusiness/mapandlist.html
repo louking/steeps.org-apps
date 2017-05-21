@@ -1,0 +1,120 @@
+<base target="_top">
+<style>
+  .rfb-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+  
+  #rfb-map {
+    height: 400px;
+    width: 100%;
+  }
+  
+  #rfb-list {
+  }
+</style>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.jqueryui.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.jqueryui.min.css"/>
+
+<div class=rfb-wrapper>
+  <div id="rfb-map"></div>
+  
+  <div id="rfb-list">
+    <table id="rfb-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Business Type</th>
+          <th>Address</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+      <? for (var i = 0; i < features.length; i++) { ?>
+        <? properties = features[i].geometry.properties ?>
+          <? if (properties.icon.toLowerCase() != 'business') continue; ?>
+          <tr>
+            <td><?= properties.name ?></td>
+            <td><?= properties.icon ?></td>
+            <td><?= properties.type ?></td>
+            <td><?= properties.street ?>, 
+                <?= properties.city ?>
+            </td>
+            <td><?= properties.comment ? properties.comment : '' ?></td>
+          </tr>
+      <? } ?>
+      </tbody>
+    </table>
+  </div> <!-- rfb-list -->
+</div> <!-- rfb-wrapper -->
+
+<script>
+  function initMap() {
+    var frederick = {lat: 39.4406192, lng: -77.4892428};
+    var features = JSON.parse(<?= jsonfeatures ?>);
+    var map = new google.maps.Map(document.getElementById('rfb-map'), {
+      zoom: 10,
+      center: frederick
+    });
+      
+    // add all the markers, keeping track of the bounds
+    // see http://stackoverflow.com/questions/1556921/google-map-api-v3-set-bounds-and-center
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < features.length; i++) {
+      var coordinates = features[i].geometry.coordinates;
+      var properties = features[i].geometry.properties;
+      var icon = properties.icon.toLowerCase();
+      
+      // business gets more stuff in the title
+      if (icon == 'business') {
+        var title = properties.name + '\n' + properties.type + '\n' + properties.street + ', ' + properties.city;
+      
+      // nonbusiness just record what it is
+      } else {
+        var title = properties.icon;
+      }
+        
+      var position = { lat: parseFloat( coordinates[0] ), lng: parseFloat( coordinates[1] ) };
+      bounds.extend(position)
+      var markeropts = {
+        position: position,
+        title: title,
+        map: map
+      };
+      if (icon == 'water') {
+        var image = {
+          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_local_drink_blue.png',
+          anchor: new google.maps.Point(15, 17),
+        };
+        markeropts.icon = image;
+      } else if (icon == 'rest room') {
+        var image = {
+          url: 'https://steeplechasers.org/wp-content/uploads/icons/ic_wc_green.png',
+          anchor: new google.maps.Point(15, 17),
+        };
+        markeropts.icon = image;
+      }
+      var marker = new google.maps.Marker(markeropts);
+    } 
+    map.fitBounds(bounds);
+  }
+</script>
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUjwDo7PJ6wLTWRxUUbUBeBRCu39hmlbM&callback=initMap">
+</script>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/dataTables.jqueryui.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.jqueryui.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('#rfb-table').DataTable();
+});
+</script>
