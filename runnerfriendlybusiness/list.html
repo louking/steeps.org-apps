@@ -13,11 +13,6 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/dataTables.jqueryui.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.jqueryui.min.js"></script>
-    <script>
-      $(document).ready(function(){
-          $('#rfb-table').DataTable();
-      });
-    </script>
   </head>
   <body>
   <div id="rfb-list">
@@ -51,4 +46,11 @@
   </body>
 </html>
 
+<script>
+$(document).ready(function(){
+  $('#rfb-table').DataTable({
+    pageLength: 500,
+  });
+});
+</script>
 
