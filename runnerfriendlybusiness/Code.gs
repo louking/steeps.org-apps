@@ -99,6 +99,9 @@ function getGeoJson() {
     var point = objects[i];
     var iconattrs = icons[point.icon];
 
+    // skip rows which are being updated -- Icon needs to be set last
+    if (!point.icon) continue;
+    
     // if in list, may need to check a point attr to decide to include
     if (iconattrs.inList) {
       if (iconattrs.checkAttr) {
