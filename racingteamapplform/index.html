@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    
+    <!-- http://materializecss.com/getting-started.html, https://github.com/dogfalo/materialize/ -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.css" media="screen,projection">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    
+    <!-- see http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app -->
+    <style>
+    <?!= getContent("racingteamapplication.css") ?>
+    </style>
+  </head>
+  <body>
+    
+    <form class="main" id="form" novalidate="novalidate" style="max-width: 480px;margin: 40px auto;">
+      <div id="data" class="input">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
+            <p>To apply for the racing team, or to renew your application, please use this form to submit your qualifying information. 
+            See <a href="https://steeplechasers.org/competition/racing-team/">https://steeplechasers.org/competition/racing-team/</a> 
+            for more information about qualifying standards.</p>            
+          </div>
+        </div>
+      
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="name">Name *</label>
+            <input id="name" type="text" name="Name" class="validate" required aria-required="true">
+          </div>
+        </div>
+       
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="email">Email *</label>
+            <input id="email" type="email" name="Email" class="validate" required aria-required="true">
+          </div>
+        </div>
+             
+        <div class="row">
+          <div class="input-field col s12">
+            <label for="dob">Birth Date *</label>
+            <input id="dob" type="date" name="Birth Date" class="datepicker" >
+          </div>
+        </div>
+             
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="gender" name="gender" class="validate" required aria-required="true" onchange="setAgeGrade()">
+              <option value="" required disabled selected>Select gender</option>
+              <option value="F">female</option>
+              <option value="M">male</option>
+            </select>
+            <label>Gender *</label>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="applntype" name="applntype" class="validate" required  onchange='showRaces()'>
+              <option value="" required disabled selected>Choose type of application</option>
+              <option value="new">New Racing Team Member</option>
+              <option value="renewal">Returning Racing Team Member</option>
+            </select>
+            <label>Application Type *</label>
+          </div>
+        </div>
+        
+        <div class="row">
+          <p>New racing team members need to have a qualifying time in one race 5K or longer in the past calendar year. 
+          Returning racing team members need to have a qualifying time in two races 5K or longer in the past calendar year.</p>
+        </div>
+                
+        <? for (var racenum=1; racenum <= 2; racenum++) { ?>
+          <? var tag = "race" + racenum ?>
+            <div id="<?= tag ?>-registration" class="input all-registrations" style="display:none">
+                
+              <div class="input-field col s6">
+                <input value="" id="<?= tag ?>-name" type="text" name="<?= tag ?>-name" required aria-required="true">
+                <label for="<?= tag ?>-name">Race <?= racenum ?> - Name *</label>
+              </div>
+
+              <div class="input-field col s6">
+                <input value="" id="<?= tag ?>-location" type="text" name="<?= tag ?>-location" required aria-required="true">
+                <label for="<?= tag ?>-location">Race <?= racenum ?> - Location *</label>
+              </div>
+
+              <div class="input-field col s6">
+                <input id="<?= tag ?>-date" type="date" class="datepicker" name="<?= tag ?>-date" >
+                <!-- <input id="<?= tag ?>-date" type="date" class="datepicker" name="<?= tag ?>-date" onchange="setAgeGrade('<?= tag ?>')" > -->
+                <label for="<?= tag ?>-date">Race <?= racenum ?> - Date *</label>
+              </div>
+              
+              <div class="row">
+                <div class="input-field col s6">
+                  <input id="<?= tag ?>-distance" type="number" step="any" required class="validate" name="<?= tag ?>-distance" onchange="setAgeGrade('<?= tag ?>')" required aria-required="true">
+                  <label for="<?= tag ?>-distance">Race <?= racenum ?> - Distance *</label>
+                </div>
+                <div class="input-field col s3">
+                  <select id="<?= tag ?>-units" name="<?= tag ?>-units" class="validate" required  onchange="setAgeGrade('<?= tag ?>')">
+                    <option value="" required disabled selected>miles / km *</option>
+                    <option value="miles">miles</option>
+                    <option value="km">km</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="input-field col s6">
+                <input id="<?= tag ?>-time" type="text" required class="validate" name="<?= tag ?>-time" 
+                      onchange="checkTimeAndSetAgeGrade('<?= tag ?>', '#<?= tag ?>-time')" required aria-required="true"
+                      pattern="((([0-1]?[0-9]|2[0-4]):)?([0-5]?[0-9]):)?([0-5][0-9])(.[0-9]*)?">
+                <label for="<?= tag ?>-time">Race <?= racenum ?> - Official Time (hh:mm:ss) *</label>
+              </div>
+              
+              <div class="row">
+                <p>Race Results Website is optional, but please help the racing team coordinator by finding and supplying this.</p>
+              </div>
+                
+              <div class="input-field col s6">
+                <input value="" id="<?= tag ?>-resultslink" type="url" name="<?= tag ?>-resultslink">
+                <label for="<?= tag ?>-resultslink">Race <?= racenum ?> - Results Website</label>
+              </div>
+
+              <div class="input-field col s6">
+                <input disabled value="Calculated from birth date, gender, race date, distance, time" id="<?= tag ?>-agegrade" type="text" name="<?= tag ?>-agegrade" >
+                <label for="<?= tag ?>-agegrade">Race <?= racenum ?> - Age Grade</label>
+              </div>
+        
+          </div> <!-- <?= tag ?>-registration -->
+        <? } ?>
+      
+        <div class='comment-fields'>
+          <div class="input-field col s12">
+            <textarea id="comments" class="materialize-textarea"></textarea>
+            <label for="comments">Comments</label>
+          </div>
+          
+        </div> <!-- comment-fields -->
+
+        <div class="row">
+          <div class="input-field col s12 left-align">
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background" type="submit">NEXT</button>
+          </div>   
+        </div>
+
+      </div> <!-- data -->
+      
+      <div id="confirmation" class="input" style='display:none'>
+          <div class="row">
+            <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
+            <p>If all the information below is correct, 
+            click SUBMIT to submit your application,
+            otherwise, click BACK to make corrections</p>            
+          </div>
+          
+        <div id="confirmation-fields">
+        </div>
+
+        <div class="row">
+          <div class="input-field col s12 left-align">
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background" type="button" onclick="backPage();">BACK</button>
+            <!-- text of next button is changed to WAIT... when clicked and reset to SUBMIT when back button clicked -->
+            <button class="waves-effect waves-light btn submit-btn steeps-blue-background nopaypal" type="submit">SUBMIT</button>
+            <span id="paypal-button" class="paypal"></span>
+          </div>   
+        </div>
+
+      </div>
+      
+      <div id="payment-wait" class="input" style="display:none">
+        <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
+        <p>Thank you. We are submitting your racing team application. Please wait for confirmation that the application has been submitted successfully.
+        If you do not see the success page in 30 seconds, please send email to <a href="mailto:racingteam@steeplechasers.org">racingteam@steeplechasers.org</a></p>
+        
+        <div id="error-notification" style="display:none; color:red">
+          <p>Oops, an error occurred. </p>
+          <p>We don't want to lose track of your desire to join the racing team -- please send email to 
+          <a href="mailto:racingteam@steeplechasers.org">racingteam@steeplechasers.org</a>, and we will get the problem sorted out.</p>
+        </div>
+      </div> <!-- success -->
+
+      <div id="footer" class="input">
+        <div class="row">
+         <p class="small-text">
+         If you have any problems submitting this form, or questions on how to use this form, 
+         send email to 
+         <a href="mailto:racingteam@steeplechasers.org?subject=[Racing Team Application Form - Help] problem or question on application form">racingteam@steeplechasers.org</a>
+         </p>
+        </div>
+      </div> <!-- footer -->
+      
+      
+      <div id="success" style="display:none">
+        <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
+        <p>Thank you. Your racing team application has been successfully submitted. You will be receiving an email with more information.</p>
+        <p>If you have any questions, please send email to <a href="mailto:racingteam@steeplechasers.org">racingteam@steeplechasers.org</a>.</p>
+      </div> <!-- success -->
+    </form>
+    
+    <!-- http://materializecss.com/getting-started.html, https://github.com/dogfalo/materialize/ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.js"></script>
+    
+    <!-- https://jqueryvalidation.org/ -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+    
+    <script>    
+    // see http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app
+    <?!= getContent("racingteamapplication.js") ?>
+    
+  </script>
+
+  </body>
+</html>
+
+<!-- http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app -->
+
+
