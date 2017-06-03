@@ -148,6 +148,19 @@
 
       </div> <!-- data -->
       
+      <div class="applications-closed" style="display:none;">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
+            <p>Thank you so much for your interest in the Frederick Steeplechasers Racing Team! Unfortunately, 
+            the application period is now closed. Racing team applications are generally taken from Dec 1 through 
+            Dec 31 for team membership Jan 1 through Dec 31, and from Jun 1 through Jun 30 for team membership 
+            Jul 1 through Jun 30. </p>
+            <p>If you have any questions, please contact <a href="mailto:racingteam@steeplechasers.org">racingteam@steeplechasers.org</a>.</p>
+          </div>
+        </div>
+      </div> <!-- applications-closed -->
+
       <div id="confirmation" class="input" style='display:none'>
           <div class="row">
             <h5 class="center-align steeps-blue-text">Frederick Steeplechasers<br/>Racing Team Application</h5>
@@ -208,6 +221,10 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
     
     <script>    
+    // pass config to javascript
+    // see http://stackoverflow.com/questions/28073859/send-a-variable-from-htmlservice-to-a-google-apps-script-function
+    var config = JSON.parse(<?= config_json ?>);
+
     // see http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app
     <?!= getContent("racingteamapplication.js") ?>
     

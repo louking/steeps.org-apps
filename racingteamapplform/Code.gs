@@ -1,4 +1,7 @@
 // racing team application form
+// assumes executing from workbook
+//    applications sheet gets log of applications
+//    configuration sheet has configuration parameters
 
 /**
  * Get "home page", or a requested page.
@@ -8,7 +11,8 @@
  * @returns {String/html} Html to be served
  */
 function doGet(e) {
-  Logger.log( Utilities.jsonStringify(e) );
+  Logger.log( 'e = ' + Utilities.jsonStringify(e) );
+
   // When no specific page requested, return "home page"
   if (!e.parameter.page) {
     // need to set xframe options mode - see https://code.google.com/p/google-apps-script-issues/issues/detail?id=852 #89
@@ -18,7 +22,12 @@ function doGet(e) {
   } else {
     var t = HtmlService.createTemplateFromFile(e.parameter['page']);
   };
-  
+
+  // pull in configuration
+  config = getConfig();
+  t.config = config;
+  t.config_json = JSON.stringify(config);
+
   return t.evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -30,6 +39,28 @@ function getScriptUrl() {
  var url = ScriptApp.getService().getUrl();
  return url;
 }
+
+// get config from configuration sheet
+function getConfig() {
+  var wb = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = wb.getSheetByName('configuration'); 
+  var configdata = getRowsData(sheet, sheet.getDataRange(), 1);
+
+  config = {};
+  for (i=1; i<configdata.length; i++) {
+    var param = configdata[i];
+    var thisparam = normalizeHeader(param.parameter)
+    config[thisparam] = param.value;
+
+    // special processing this script
+    if (thisparam == 'open' && param.value) {
+      config[thisparam] = param.value.toLowerCase();
+    }
+  };
+
+  Logger.log( 'config = ' + Utilities.jsonStringify(config) );
+  return config;
+};
 
 // see http://stackoverflow.com/questions/11344167/use-project-javascript-and-css-files-in-a-google-apps-script-web-app
 /**

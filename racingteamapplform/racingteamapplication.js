@@ -59,30 +59,38 @@
       };
       
       function showCurrentInputPage () {
-        var currpage = getCurrentPage();
-        
-        // maybe we're looking for confirmation?
-        if (currpage == 'confirmation') {
-          setConfirmationFields();
-        }
-        
-        // show only the current page
-        $('.input').hide();
-        $('#'+currpage).show();
-        
-        // show current races
-        showRaces();
-        
-        // add ignore-validate class to all hidden page fields we're validating
-//        $('.validate').addClass('ignore-validate');
-//        $('#'+currpage).removeClass('ignore-validate');
-        
-        // show the footer for input pages
-        if (currpage != 'payment-wait') {
-          $('#footer').show();
-        };
+        // only show form if configured that applications are open
+        if (config.open == 'yes') {
+          var currpage = getCurrentPage();
           
-        console.log('showCurrentInputPage(): currpage='+currpage);
+          // maybe we're looking for confirmation?
+          if (currpage == 'confirmation') {
+            setConfirmationFields();
+          }
+          
+          // show only the current page
+          $('.input').hide();
+          $('#'+currpage).show();
+          
+          // show current races
+          showRaces();
+          
+          // add ignore-validate class to all hidden page fields we're validating
+  //        $('.validate').addClass('ignore-validate');
+  //        $('#'+currpage).removeClass('ignore-validate');
+          
+          // show the footer for input pages
+          if (currpage != 'payment-wait') {
+            $('#footer').show();
+          };
+            
+          console.log('showCurrentInputPage(): currpage='+currpage);
+
+        // if applications are not open, show that we're closed
+        } else {
+          $('.input').hide();
+          $('.applications-closed').show();
+        }
       };
 
       // set confirmationfields object, and #confirmation-fields DOM element
@@ -211,13 +219,6 @@
         return age;
       }
       
-      $(document).ready(function() {
-        $('select').material_select();
-        
-        // this is needed to add ignore-validate classes to hidden fields
-        showCurrentInputPage();
-      });
-
 
       function getFormData() {
         return confirmationfields;
@@ -310,7 +311,6 @@
         });
       }
 
-    
     // see https://github.com/Dogfalo/materialize/issues/3216, https://jsfiddle.net/louking/9d6n4su1/
     function checkDate(dateid) {
       console.log('checkDate("'+dateid+'")');
@@ -321,40 +321,48 @@
         $(dateid).removeClass('invalid');
       }
    };
+  
+  // set up date fields
+  $('#dob').pickadate({
+    selectMonths: true, // Creates a dropdown to control month
+    selectYears: 100,   // Creates a dropdown of 100 years to control year
+    max: true,          // today
+    format: 'yyyy-mm-dd',
+    formatSubmit: 'yyyy-mm-dd',
+  });
+  $('#dob').change(function() {
+    checkDate('#dob');
+    setAgeGrade();
+  });
+  $('#race1-date').pickadate({
+    selectMonths: true, // Creates a dropdown to control month
+    selectYears: 2,     // Creates a dropdown of 2 years to control year
+    max: true,          // today
+    format: 'yyyy-mm-dd',
+    formatSubmit: 'yyyy-mm-dd',
+    //onSet: setAgeGrade('race1'),
+  });
+  $('#race1-date').change(function() {
+    checkDate('#race1-date');
+    setAgeGrade('race1')
+  });
+  $('#race2-date').pickadate({
+    selectMonths: true, // Creates a dropdown to control month
+    selectYears: 2,     // Creates a dropdown of 2 years to control year
+    max: true,          // today
+    format: 'yyyy-mm-dd',
+    formatSubmit: 'yyyy-mm-dd',
+    //onSet: setAgeGrade('race2'),
+  });
+  $('#race2-date').change(function() {
+    checkDate('#race2-date');
+    setAgeGrade('race2')
+  });
+
+  $(document).ready(function() {
+    $('select').material_select();
     
-    $('#dob').pickadate({
-      selectMonths: true, // Creates a dropdown to control month
-      selectYears: 100,   // Creates a dropdown of 100 years to control year
-      max: true,          // today
-      format: 'yyyy-mm-dd',
-      formatSubmit: 'yyyy-mm-dd',
-    });
-    $('#dob').change(function() {
-      checkDate('#dob');
-      setAgeGrade();
-    });
-    $('#race1-date').pickadate({
-      selectMonths: true, // Creates a dropdown to control month
-      selectYears: 2,     // Creates a dropdown of 2 years to control year
-      max: true,          // today
-      format: 'yyyy-mm-dd',
-      formatSubmit: 'yyyy-mm-dd',
-      //onSet: setAgeGrade('race1'),
-    });
-    $('#race1-date').change(function() {
-      checkDate('#race1-date');
-      setAgeGrade('race1')
-    });
-    $('#race2-date').pickadate({
-      selectMonths: true, // Creates a dropdown to control month
-      selectYears: 2,     // Creates a dropdown of 2 years to control year
-      max: true,          // today
-      format: 'yyyy-mm-dd',
-      formatSubmit: 'yyyy-mm-dd',
-      //onSet: setAgeGrade('race2'),
-    });
-    $('#race2-date').change(function() {
-      checkDate('#race2-date');
-      setAgeGrade('race2')
-    });
+    // this is needed to add ignore-validate classes to hidden fields
+    showCurrentInputPage();
+  });
 
