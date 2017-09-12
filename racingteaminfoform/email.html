@@ -1,0 +1,18 @@
+<p>The following information for the racing team was submitted. If this is correct, no action is required. If you have any changes, please contact racingteam@steeplechasers.org</p>
+    
+<table>
+  <? for (var i=0; i<formdata._keyorder.length; i++) { ?>
+    <? var field = formdata._keyorder[i]; ?>
+    <tr>
+      <td><?= formdata[field].label ?></td>
+      <td><?= formdata[field].text ?></td>
+    </tr>
+  <? } ?>
+</table>
+
+<p>
+Racing Team - <a href="mailto:racingteam@steeplechasers.org">racingteam@steeplechasers.org</a><br/>
+Frederick Steeplechasers Running Club <br/>
+<a href="http://steeplechasers.org">http://steeplechasers.org</a>
+</p>    
+
