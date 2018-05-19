@@ -181,16 +181,19 @@
       }
       
       function showRaces() {
+        // most of this function is now commented because two races are now required for both new and renewal
+        // if requirement changed back to one race for new, two for renewal, uncomment
+
         $('.all-registrations').hide();
         $('#race1-registration').show();
-        if ($('#applntype').val() == 'renewal') {
+        // if ($('#applntype').val() == 'renewal') {
           $('#race2-registration').show();
-        };
-        $('.all-registrations input,.all-registrations select').addClass('ignore-validate');
-        $('#race1-registration input, #race1-registration select').removeClass('ignore-validate');
-        if ($('#applntype').val() == 'renewal') {
-          $('#race2-registration input, #race2-registration select').removeClass('ignore-validate');
-        };
+        // };
+        // $('.all-registrations input,.all-registrations select').addClass('ignore-validate');
+        // $('#race1-registration input, #race1-registration select').removeClass('ignore-validate');
+        // if ($('#applntype').val() == 'renewal') {
+        //   $('#race2-registration input, #race2-registration select').removeClass('ignore-validate');
+        // };
       };
 
       // dob, racedate in yyyy-mm-dd format
