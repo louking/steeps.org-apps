@@ -102,8 +102,8 @@
         var formfields = ['name', 'email', 'dob', 'gender', 'applntype'];
         var racefields = 'race{i}-name,race{i}-location,race{i}-date,race{i}-distance,race{i}-units,race{i}-time,race{i}-resultslink,race{i}-agegrade';
         for (racenum=1; racenum<=2; racenum++) {
-          // don't save 2nd race if new application
-          if (racenum==2 && $('#applntype').val() == 'new') break;
+          // don't save 2nd race if new application - uncomment if only one race required for new
+          // if (racenum==2 && $('#applntype').val() == 'new') break;
           var theseracefields = racefields.replace(/{i}/g, racenum).split(',');
           formfields = formfields.concat(theseracefields);
         }
