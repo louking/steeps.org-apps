@@ -275,6 +275,11 @@
   //   time - [[hh:]mm:]ss[.ddd]
   function updateAgeGrade(name, racedate, dist, units, time) {
     console.log('updateAgeGrade('+name+','+racedate+','+dist+','+units+','+time+')');
+
+    // disable next button, enabled in show_age_grade()
+    // see https://forum.jquery.com/topic/disable-enable-button-in-form
+    $("#next-button").attr("disabled", "disabled");
+
     // noop if any of the parameters are missing
     if ( !name || !racedate || !dist || !units || !time ) return;
     
@@ -289,6 +294,8 @@
     data = JSON.parse(data);
     if (data.status == 'success') {
       $( '#raceresult-agegrade').val( data.agpercent.toFixed(2) );
+      // good age grade received, NEXT is re-enabled
+      $("#next-button").removeAttr("disabled");
     } else {
       // pull off the first bit of the details, which is the error type
       var errordetail = data.details.split(',').slice(1).join(',');
@@ -326,5 +333,9 @@
     
     // this is needed to add ignore-validate classes to hidden fields
     showCurrentInputPage();
+
+    // disable next button initially, enabled in show_age_grade()
+    // see https://forum.jquery.com/topic/disable-enable-button-in-form
+    $("#next-button").attr("disabled", "disabled");
   });
 
