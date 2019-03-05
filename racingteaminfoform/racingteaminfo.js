@@ -187,10 +187,14 @@
         if ($('#common-infotype').val() == 'raceresult') {
           $('.raceresult-wrapper').show();
           $('.raceresult-wrapper input, .raceresult-wrapper select').removeClass('ignore-validate');
+          // disable next button, enabled in show_age_grade()
+          $("#next-button").attr("disabled", "disabled");
         };
         if ($('#common-infotype').val() == 'volunteer') {
           $('.volunteer-wrapper').show();
           $('.volunteer-wrapper input, .volunteer-wrapper select').removeClass('ignore-validate');
+          // volunteering, NEXT is enabled
+          $("#next-button").removeAttr("disabled");
         };
       };
 
